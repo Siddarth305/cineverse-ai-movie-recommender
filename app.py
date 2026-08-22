@@ -13,7 +13,7 @@ app = Flask(__name__)
 # TMDB API KEY
 # =========================================
 
-TMDB_API_KEY = "bdc52443af517c042be5e83eb01eeca5"
+TMDB_API_KEY = "ADD_API_HERE"
 
 
 # =========================================
