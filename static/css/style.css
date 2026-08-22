@@ -1,0 +1,939 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+:root {
+    --bg: #06070d;
+    --card: rgba(19, 22, 35, 0.72);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text: #f5f7ff;
+    --muted: #9da6c2;
+    --purple: #8b5cf6;
+    --purple-light: #a78bfa;
+    --cyan: #22d3ee;
+    --pink: #ec4899;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    overflow-x: hidden;
+}
+
+
+/* =========================================
+   BACKGROUND
+========================================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -2;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(139, 92, 246, 0.12),
+            transparent 35%
+        ),
+        #06070d;
+}
+
+
+.grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.25;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 55px 55px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 80%
+        );
+}
+
+
+.orb {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.16;
+}
+
+
+.orb-1 {
+    background: var(--purple);
+    top: -200px;
+    left: -150px;
+
+    animation: floatOrb1 14s ease-in-out infinite;
+}
+
+
+.orb-2 {
+    background: var(--cyan);
+    right: -200px;
+    top: 250px;
+
+    animation: floatOrb2 18s ease-in-out infinite;
+}
+
+
+.orb-3 {
+    background: var(--pink);
+    bottom: -250px;
+    left: 30%;
+
+    animation: floatOrb3 16s ease-in-out infinite;
+}
+
+
+@keyframes floatOrb1 {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(130px, 100px);
+    }
+
+}
+
+
+@keyframes floatOrb2 {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-120px, -100px);
+    }
+
+}
+
+
+@keyframes floatOrb3 {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-150px);
+    }
+
+}
+
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.container {
+    width: min(1200px, 92%);
+    margin: auto;
+    padding: 80px 0 60px;
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero {
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+    animation: heroAppear 0.9s ease;
+}
+
+
+@keyframes heroAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.badge {
+    width: fit-content;
+    margin: 0 auto 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 9px 16px;
+
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.08);
+
+    border-radius: 100px;
+
+    color: var(--purple-light);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+    background: #34d399;
+
+    box-shadow:
+        0 0 0 4px rgba(52, 211, 153, 0.12),
+        0 0 12px #34d399;
+
+    animation: pulse 2s infinite;
+}
+
+
+@keyframes pulse {
+
+    50% {
+        opacity: 0.4;
+        transform: scale(1.2);
+    }
+
+}
+
+
+h1 {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(42px, 7vw, 78px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+    font-weight: 700;
+}
+
+
+h1 span {
+    display: block;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--purple-light),
+            var(--cyan),
+            var(--pink)
+        );
+
+    background-size: 200% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    animation: gradientMove 6s linear infinite;
+}
+
+
+@keyframes gradientMove {
+
+    to {
+        background-position: 200% center;
+    }
+
+}
+
+
+.subtitle {
+    max-width: 620px;
+    margin: 24px auto 38px;
+
+    color: var(--muted);
+
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.search-container {
+    position: relative;
+    max-width: 780px;
+    margin: auto;
+    z-index: 20;
+}
+
+
+.search-box {
+    display: flex;
+    align-items: center;
+
+    padding: 7px;
+
+    background:
+        rgba(20, 23, 37, 0.78);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius: 18px;
+
+    backdrop-filter: blur(20px);
+
+    box-shadow:
+        0 20px 80px rgba(0, 0, 0, 0.35);
+
+    transition: 0.3s ease;
+}
+
+
+.search-box:focus-within {
+
+    border-color:
+        rgba(139, 92, 246, 0.7);
+
+    box-shadow:
+        0 0 0 4px rgba(139, 92, 246, 0.08),
+        0 20px 80px rgba(0, 0, 0, 0.45);
+
+}
+
+
+.search-icon {
+    padding: 0 12px;
+    font-size: 18px;
+}
+
+
+#movieInput {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 16px 5px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-family: inherit;
+    font-size: 16px;
+}
+
+
+#movieInput::placeholder {
+    color: #6f7892;
+}
+
+
+#recommendButton {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 15px 22px;
+
+    border: none;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            #6d5dfc
+        );
+
+    color: white;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+
+    box-shadow:
+        0 10px 30px rgba(139, 92, 246, 0.3);
+}
+
+
+#recommendButton:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 15px 35px rgba(139, 92, 246, 0.5);
+
+}
+
+
+.button-arrow {
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+
+#recommendButton:hover .button-arrow {
+    transform: translateX(4px);
+}
+
+
+/* =========================================
+   SUGGESTIONS
+========================================= */
+
+#suggestions {
+
+    position: absolute;
+
+    width: 100%;
+
+    top: calc(100% + 10px);
+
+    max-height: 390px;
+    overflow-y: auto;
+
+    background:
+        rgba(15, 18, 30, 0.96);
+
+    backdrop-filter: blur(25px);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.1);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.55);
+
+    overflow: hidden;
+}
+
+
+.suggestion-item {
+
+    padding: 16px 20px;
+
+    cursor: pointer;
+
+    color: #dce2f5;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.06);
+
+    transition: 0.25s ease;
+}
+
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+
+.suggestion-item:hover {
+
+    padding-left: 27px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(139, 92, 246, 0.18),
+            transparent
+        );
+
+    color: white;
+}
+
+
+/* =========================================
+   FEATURES
+========================================= */
+
+.features {
+
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+
+    margin-top: 28px;
+
+    color: #79829e;
+}
+
+
+.feature {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+}
+
+
+.feature span {
+    color: var(--cyan);
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+#message {
+
+    text-align: center;
+
+    margin: 35px 0 10px;
+
+    color: #facc15;
+
+    font-weight: 500;
+
+    min-height: 25px;
+}
+
+
+/* =========================================
+   RESULTS
+========================================= */
+
+#results {
+    margin-top: 65px;
+}
+
+
+.results-header {
+
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 30px;
+}
+
+
+.section-label {
+
+    margin-bottom: 8px;
+
+    color: var(--purple-light);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+
+#resultsTitle {
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: clamp(28px, 4vw, 42px);
+
+    letter-spacing: -1.5px;
+}
+
+
+.source-badge {
+
+    padding: 9px 14px;
+
+    border-radius: 100px;
+
+    background:
+        rgba(34, 211, 238, 0.08);
+
+    border:
+        1px solid rgba(34, 211, 238, 0.25);
+
+    color: var(--cyan);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   MOVIE GRID
+========================================= */
+
+#recommendations {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(220px, 1fr));
+
+    gap: 22px;
+}
+
+
+/* =========================================
+   MOVIE CARD
+========================================= */
+
+.movie-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        var(--card);
+
+    border:
+        1px solid var(--card-border);
+
+    border-radius: 20px;
+
+    backdrop-filter: blur(18px);
+
+    transition:
+        transform 0.35s ease,
+        border 0.35s ease,
+        box-shadow 0.35s ease;
+
+    animation:
+        cardAppear 0.6s ease backwards;
+}
+
+
+@keyframes cardAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.movie-card:hover {
+
+    transform:
+        translateY(-10px);
+
+    border-color:
+        rgba(139, 92, 246, 0.55);
+
+    box-shadow:
+        0 25px 55px rgba(0, 0, 0, 0.4),
+        0 0 35px rgba(139, 92, 246, 0.12);
+}
+
+
+.movie-card img {
+
+    display: block;
+
+    width: 100%;
+    height: 330px;
+
+    object-fit: cover;
+
+    transition: 0.5s ease;
+}
+
+
+.movie-card:hover img {
+    transform: scale(1.06);
+}
+
+
+.no-poster {
+
+    height: 330px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #171a28,
+            #242a42
+        );
+
+    color: var(--muted);
+
+    padding: 20px;
+    text-align: center;
+}
+
+
+.movie-info {
+    padding: 18px;
+}
+
+
+.movie-info h3 {
+
+    min-height: 52px;
+
+    font-size: 17px;
+    line-height: 1.35;
+
+    margin-bottom: 12px;
+}
+
+
+.movie-meta {
+
+    display: flex;
+    gap: 15px;
+
+    margin-bottom: 13px;
+
+    color: #aeb8d3;
+
+    font-size: 13px;
+}
+
+
+.overview {
+
+    color: #8e98b3;
+
+    font-size: 12px;
+    line-height: 1.65;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+
+.similarity {
+
+    margin-top: 15px;
+
+    color: var(--purple-light);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================
+   LOAD MORE
+========================================= */
+
+.load-more-container {
+
+    display: none;
+
+    justify-content: center;
+
+    margin-top: 45px;
+}
+
+
+.load-more-button {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 15px 28px;
+
+    border-radius: 14px;
+
+    border:
+        1px solid rgba(139, 92, 246, 0.45);
+
+    background:
+        rgba(139, 92, 246, 0.1);
+
+    color: white;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+}
+
+
+.load-more-button:hover {
+
+    background:
+        rgba(139, 92, 246, 0.25);
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(139, 92, 246, 0.2);
+}
+
+
+.load-more-button:disabled {
+
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #59617a;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+}
+
+
+footer span {
+    margin: 0 8px;
+    color: var(--purple);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 650px) {
+
+    .container {
+        padding-top: 50px;
+    }
+
+
+    h1 {
+        letter-spacing: -2px;
+    }
+
+
+    .search-box {
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+
+
+    #movieInput {
+        width: calc(100% - 50px);
+    }
+
+
+    #recommendButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+
+    .results-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    #recommendations {
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 13px;
+    }
+
+
+    .movie-card img,
+    .no-poster {
+        height: 250px;
+    }
+
+
+    .movie-info {
+        padding: 13px;
+    }
+
+
+    .movie-info h3 {
+        font-size: 14px;
+    }
+
+
+    .overview {
+        display: none;
+    }
+
+}
