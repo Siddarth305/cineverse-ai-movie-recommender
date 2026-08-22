@@ -3,7 +3,7 @@ import pickle
 import requests
 import pandas as pd
 import numpy as np
-import os
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 app = Flask(__name__)
@@ -16,7 +16,6 @@ app = Flask(__name__)
 TMDB_API_KEY = "bdc52443af517c042be5e83eb01eeca5"
 
 
-
 # =========================================
 # LOAD ML DATA
 # =========================================
@@ -24,9 +23,8 @@ TMDB_API_KEY = "bdc52443af517c042be5e83eb01eeca5"
 with open("model/movies.pkl", "rb") as file:
     movies = pickle.load(file)
 
-
-with open("model/similarity.pkl", "rb") as file:
-    similarity = pickle.load(file)
+with open("model/vectors.pkl", "rb") as file:
+    vectors = pickle.load(file)
 
 
 movies["movie_id"] = pd.to_numeric(
@@ -36,7 +34,7 @@ movies["movie_id"] = pd.to_numeric(
 
 
 print("Movies loaded:", len(movies))
-print("Similarity matrix shape:", similarity.shape)
+print("Vectors shape:", vectors.shape)
 
 
 # =========================================
@@ -72,12 +70,10 @@ def get_movie_details(movie_id):
 
     url = f"https://api.themoviedb.org/3/movie/{movie_id}"
 
-
     params = {
         "api_key": TMDB_API_KEY,
         "language": "en-US"
     }
-
 
     try:
 
@@ -86,7 +82,6 @@ def get_movie_details(movie_id):
             params=params,
             timeout=10
         )
-
 
         if response.status_code != 200:
 
@@ -97,9 +92,7 @@ def get_movie_details(movie_id):
 
             return None
 
-
         data = response.json()
-
 
         return {
             "movie_id": data.get("id"),
@@ -116,7 +109,6 @@ def get_movie_details(movie_id):
             ]
         }
 
-
     except requests.exceptions.RequestException as error:
 
         print("Details request error:", error)
@@ -132,14 +124,12 @@ def search_movies(query):
 
     url = "https://api.themoviedb.org/3/search/movie"
 
-
     params = {
         "api_key": TMDB_API_KEY,
         "query": query,
         "language": "en-US",
         "page": 1
     }
-
 
     try:
 
@@ -149,34 +139,24 @@ def search_movies(query):
             timeout=10
         )
 
-
         if response.status_code != 200:
             return []
 
-
         data = response.json()
 
-
         results = []
-
 
         for movie in data.get("results", [])[:10]:
 
             results.append({
-
                 "movie_id": movie.get("id"),
-
                 "title": movie.get("title"),
-
                 "release_date": movie.get(
                     "release_date"
                 )
-
             })
 
-
         return results
-
 
     except requests.exceptions.RequestException as error:
 
@@ -197,10 +177,8 @@ def search():
         ""
     ).strip()
 
-
     if not query:
         return jsonify([])
-
 
     return jsonify(
         search_movies(query)
@@ -214,7 +192,6 @@ def search():
 def format_tmdb_movies(movie_list, source):
 
     recommendations = []
-
 
     for movie in movie_list:
 
@@ -242,7 +219,6 @@ def format_tmdb_movies(movie_list, source):
 
         })
 
-
     return recommendations
 
 
@@ -262,12 +238,10 @@ def get_tmdb_movie_list(
 
     position_in_page = offset % 20
 
-
     url = (
         f"https://api.themoviedb.org/3/movie/"
         f"{movie_id}/{endpoint}"
     )
-
 
     params = {
 
@@ -279,7 +253,6 @@ def get_tmdb_movie_list(
 
     }
 
-
     try:
 
         response = requests.get(
@@ -288,7 +261,6 @@ def get_tmdb_movie_list(
             timeout=10
         )
 
-
         print(
             f"TMDB {endpoint} | "
             f"movie={movie_id} | "
@@ -296,33 +268,26 @@ def get_tmdb_movie_list(
             f"status={response.status_code}"
         )
 
-
         if response.status_code != 200:
             return [], False
-
 
         data = response.json()
 
         all_results = data.get("results", [])
-
 
         selected_results = all_results[
             position_in_page:
             position_in_page + limit
         ]
 
-
         formatted_results = format_tmdb_movies(
             selected_results,
             source
         )
 
-
         total_pages = data.get("total_pages", 1)
 
-
         has_more = False
-
 
         if position_in_page + limit < len(all_results):
 
@@ -332,9 +297,7 @@ def get_tmdb_movie_list(
 
             has_more = True
 
-
         return formatted_results, has_more
-
 
     except requests.exceptions.RequestException as error:
 
@@ -405,31 +368,24 @@ def discover_movies(
 
     movie_details = get_movie_details(movie_id)
 
-
     if not movie_details:
         return [], False
 
-
     genres = movie_details.get("genres", [])
-
 
     if not genres:
         return [], False
 
-
     genre_id = genres[0]
-
 
     page = (offset // 20) + 1
 
     position_in_page = offset % 20
 
-
     url = (
         "https://api.themoviedb.org/3/"
         "discover/movie"
     )
-
 
     params = {
 
@@ -445,7 +401,6 @@ def discover_movies(
 
     }
 
-
     try:
 
         response = requests.get(
@@ -454,13 +409,10 @@ def discover_movies(
             timeout=10
         )
 
-
         if response.status_code != 200:
             return [], False
 
-
         data = response.json()
-
 
         all_movies = [
 
@@ -472,21 +424,15 @@ def discover_movies(
 
         ]
 
-
         selected_movies = all_movies[
             position_in_page:
             position_in_page + limit
         ]
 
-
         formatted_movies = format_tmdb_movies(
-
             selected_movies,
-
             "Genre Discovery"
-
         )
-
 
         has_more = (
 
@@ -499,9 +445,7 @@ def discover_movies(
 
         )
 
-
         return formatted_movies, has_more
-
 
     except requests.exceptions.RequestException as error:
 
@@ -520,8 +464,14 @@ def get_ml_recommendations(
     limit
 ):
 
-    distances = similarity[movie_position]
+    selected_movie_vector = vectors[
+        movie_position
+    ].reshape(1, -1)
 
+    distances = cosine_similarity(
+        selected_movie_vector,
+        vectors
+    )[0]
 
     sorted_movies = sorted(
 
@@ -533,25 +483,20 @@ def get_ml_recommendations(
 
     )[1:]
 
-
     recommendations = []
 
-
     current_position = offset
-
 
     while (
         current_position < len(sorted_movies)
         and len(recommendations) < limit
     ):
 
-        position, score = sorted_movies[current_position]
+        position, score = sorted_movies[
+            current_position
+        ]
 
-
-        # Move to the next movie
-        # even if the current movie fails
         current_position += 1
-
 
         try:
 
@@ -559,11 +504,9 @@ def get_ml_recommendations(
                 movies.iloc[position]["movie_id"]
             )
 
-
             movie_details = get_movie_details(
                 recommended_movie_id
             )
-
 
             if movie_details:
 
@@ -574,14 +517,11 @@ def get_ml_recommendations(
                     3
                 )
 
-
                 movie_details["source"] = "ML"
-
 
                 recommendations.append(
                     movie_details
                 )
-
 
         except Exception as error:
 
@@ -590,17 +530,17 @@ def get_ml_recommendations(
                 error
             )
 
-
     has_more = (
         current_position < len(sorted_movies)
     )
-
 
     return (
         recommendations,
         has_more,
         current_position
     )
+
+
 # =========================================
 # RECOMMENDATION ROUTE
 # =========================================
@@ -613,18 +553,15 @@ def recommend():
         ""
     ).strip()
 
-
     movie_id = request.args.get(
         "movie_id",
         ""
     ).strip()
 
-
     strategy = request.args.get(
         "strategy",
         ""
     ).strip()
-
 
     try:
 
@@ -636,7 +573,6 @@ def recommend():
 
         offset = 0
 
-
     try:
 
         limit = int(
@@ -647,14 +583,10 @@ def recommend():
 
         limit = 5
 
-
-    # Safety limits
     offset = max(0, offset)
 
     limit = max(1, min(limit, 10))
 
-
-    # Validate movie
     if not movie_name or not movie_id:
 
         return jsonify({
@@ -663,7 +595,6 @@ def recommend():
             "Please select a movie from suggestions."
 
         }), 400
-
 
     try:
 
@@ -678,7 +609,6 @@ def recommend():
 
         }), 400
 
-
     # =====================================
     # FIND MOVIE IN ML DATASET
     # =====================================
@@ -688,7 +618,6 @@ def recommend():
         movies["movie_id"].values == movie_id
 
     )[0]
-
 
     # =====================================
     # STRATEGY: ML
@@ -708,17 +637,17 @@ def recommend():
 
                 "strategy": "ml",
 
-                "has_more": False
+                "has_more": False,
+
+                "next_offset": offset
 
             })
-
 
         movie_position = int(
             matching_positions[0]
         )
 
-
-        recommendations, has_more = (
+        recommendations, has_more, next_offset = (
             get_ml_recommendations(
 
                 movie_position,
@@ -730,7 +659,6 @@ def recommend():
             )
         )
 
-
         return jsonify({
 
             "selected_movie": movie_name,
@@ -741,10 +669,11 @@ def recommend():
 
             "strategy": "ml",
 
-            "has_more": has_more
+            "has_more": has_more,
+
+            "next_offset": next_offset
 
         })
-
 
     # =====================================
     # STRATEGY: TMDB RECOMMENDATIONS
@@ -764,21 +693,21 @@ def recommend():
             )
         )
 
-
         return jsonify({
 
             "selected_movie": movie_name,
 
             "recommendations": recommendations,
 
-            "recommendation_source": "TMDB Recommendations",
+            "recommendation_source":
+            "TMDB Recommendations",
 
-            "strategy": "tmdb_recommendations",
+            "strategy":
+            "tmdb_recommendations",
 
             "has_more": has_more
 
         })
-
 
     # =====================================
     # STRATEGY: TMDB SIMILAR
@@ -798,21 +727,20 @@ def recommend():
             )
         )
 
-
         return jsonify({
 
             "selected_movie": movie_name,
 
             "recommendations": recommendations,
 
-            "recommendation_source": "TMDB Similar Movies",
+            "recommendation_source":
+            "TMDB Similar Movies",
 
             "strategy": "tmdb_similar",
 
             "has_more": has_more
 
         })
-
 
     # =====================================
     # STRATEGY: GENRE DISCOVERY
@@ -832,14 +760,14 @@ def recommend():
             )
         )
 
-
         return jsonify({
 
             "selected_movie": movie_name,
 
             "recommendations": recommendations,
 
-            "recommendation_source": "Genre Based Discovery",
+            "recommendation_source":
+            "Genre Based Discovery",
 
             "strategy": "genre",
 
@@ -847,22 +775,19 @@ def recommend():
 
         })
 
-
     # =====================================
     # INITIAL REQUEST
-    # NO STRATEGY YET
     # =====================================
 
-
     # First preference: ML
+
     if len(matching_positions) > 0:
 
         movie_position = int(
             matching_positions[0]
         )
 
-
-        recommendations, has_more = (
+        recommendations, has_more, next_offset = (
             get_ml_recommendations(
 
                 movie_position,
@@ -874,7 +799,6 @@ def recommend():
             )
         )
 
-
         if recommendations:
 
             return jsonify({
@@ -884,17 +808,19 @@ def recommend():
                 "recommendations": recommendations,
 
                 "recommendation_source":
-                    "Machine Learning",
+                "Machine Learning",
 
                 "strategy": "ml",
 
-                "has_more": has_more
+                "has_more": has_more,
+
+                "next_offset": next_offset
 
             })
 
-
     # Second preference:
     # TMDB recommendations
+
     recommendations, has_more = (
         get_tmdb_recommendations(
 
@@ -907,7 +833,6 @@ def recommend():
         )
     )
 
-
     if recommendations:
 
         return jsonify({
@@ -917,18 +842,18 @@ def recommend():
             "recommendations": recommendations,
 
             "recommendation_source":
-                "TMDB Recommendations",
+            "TMDB Recommendations",
 
             "strategy":
-                "tmdb_recommendations",
+            "tmdb_recommendations",
 
             "has_more": has_more
 
         })
 
-
     # Third preference:
     # Similar movies
+
     recommendations, has_more = (
         get_tmdb_similar_movies(
 
@@ -941,7 +866,6 @@ def recommend():
         )
     )
 
-
     if recommendations:
 
         return jsonify({
@@ -951,7 +875,7 @@ def recommend():
             "recommendations": recommendations,
 
             "recommendation_source":
-                "TMDB Similar Movies",
+            "TMDB Similar Movies",
 
             "strategy": "tmdb_similar",
 
@@ -959,9 +883,9 @@ def recommend():
 
         })
 
-
     # Final fallback:
     # Genre discovery
+
     recommendations, has_more = (
         discover_movies(
 
@@ -974,7 +898,6 @@ def recommend():
         )
     )
 
-
     if recommendations:
 
         return jsonify({
@@ -984,7 +907,7 @@ def recommend():
             "recommendations": recommendations,
 
             "recommendation_source":
-                "Genre Based Discovery",
+            "Genre Based Discovery",
 
             "strategy": "genre",
 
@@ -992,8 +915,8 @@ def recommend():
 
         })
 
-
     # Nothing found
+
     return jsonify({
 
         "selected_movie": movie_name,
@@ -1007,10 +930,10 @@ def recommend():
         "has_more": False,
 
         "error":
-            "No recommendations were found."
+        "No recommendations were found."
 
     })
-    
+
 
 # =========================================
 # RUN APP

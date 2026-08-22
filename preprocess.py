@@ -174,26 +174,20 @@ print("Vector shape:", vectors.shape)
 
 
 # -----------------------------------
-# 15. CALCULATE COSINE SIMILARITY
-# -----------------------------------
-
-similarity = cosine_similarity(vectors)
-
-print("Similarity shape:", similarity.shape)
-
-
-# -----------------------------------
-# 16. SAVE TRAINED DATA
+# 15. SAVE ML DATA
 # -----------------------------------
 
 with open("model/movies.pkl", "wb") as file:
     pickle.dump(new_movies, file)
 
-with open("model/similarity.pkl", "wb") as file:
-    pickle.dump(similarity, file)
+
+with open("model/vectors.pkl", "wb") as file:
+    pickle.dump(vectors, file)
+
 
 print("\nModel files saved successfully!")
-
+print("Movies shape:", new_movies.shape)
+print("Vectors shape:", vectors.shape)
 
 # -----------------------------------
 # 17. RECOMMENDATION FUNCTION
