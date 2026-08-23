@@ -30,6 +30,35 @@ let currentStrategy = null;
 
 const LIMIT = 5;
 
+async function fetchWithRetry(url, options = {}, attempts = 3) {
+
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+
+        try {
+
+            const response = await fetch(url, options);
+
+            if (response.ok || response.status < 500) {
+                return response;
+            }
+
+        } catch (error) {
+
+            if (attempt === attempts - 1) {
+                throw error;
+            }
+
+        }
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 1500 * (attempt + 1));
+        });
+
+    }
+
+    throw new Error("Request failed after retries.");
+}
+
 
 /* =========================================
    SEARCH WHILE USER TYPES
@@ -68,9 +97,13 @@ async function searchMovies(query) {
 
     try {
 
-        const response = await fetch(
+        const response = await fetchWithRetry(
             `/search?query=${encodeURIComponent(query)}`
         );
+
+        if (!response.ok) {
+            throw new Error(`Search failed with status ${response.status}.`);
+        }
 
         const movies = await response.json();
 
@@ -255,7 +288,7 @@ async function loadRecommendations(isNewSearch = false) {
         }
 
 
-        const response = await fetch(url);
+        const response = await fetchWithRetry(url);
 
         const data = await response.json();
 
