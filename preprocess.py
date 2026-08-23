@@ -1,17 +1,21 @@
 import pandas as pd
 import ast
 import pickle
+from pathlib import Path
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 # -----------------------------------
 # 1. LOAD DATASETS
 # -----------------------------------
 
-movies = pd.read_csv("data/tmdb_5000_movies.csv")
-credits = pd.read_csv("data/tmdb_5000_credits.csv")
+movies = pd.read_csv(BASE_DIR / "data" / "tmdb_5000_movies.csv")
+credits = pd.read_csv(BASE_DIR / "data" / "tmdb_5000_credits.csv")
 
 
 # -----------------------------------
@@ -168,6 +172,8 @@ vectors = cv.fit_transform(
     new_movies["tags"]
 ).toarray()
 
+similarity = cosine_similarity(vectors)
+
 
 print("Number of movies:", new_movies.shape[0])
 print("Vector shape:", vectors.shape)
@@ -177,11 +183,11 @@ print("Vector shape:", vectors.shape)
 # 15. SAVE ML DATA
 # -----------------------------------
 
-with open("model/movies.pkl", "wb") as file:
+with open(BASE_DIR / "model" / "movies.pkl", "wb") as file:
     pickle.dump(new_movies, file)
 
 
-with open("model/vectors.pkl", "wb") as file:
+with open(BASE_DIR / "model" / "vectors.pkl", "wb") as file:
     pickle.dump(vectors, file)
 
 

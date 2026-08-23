@@ -1,29 +1,37 @@
 from flask import Flask, render_template, request, jsonify
+import os
 import pickle
 import requests
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from sklearn.metrics.pairwise import cosine_similarity
 
 
 app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent
 
 
 # =========================================
 # TMDB API KEY
 # =========================================
 
-TMDB_API_KEY = "ADD_API_HERE"
+TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "").strip()
+
+if not TMDB_API_KEY:
+    raise RuntimeError(
+        "TMDB_API_KEY is not configured. Set it in the hosting environment."
+    )
 
 
 # =========================================
 # LOAD ML DATA
 # =========================================
 
-with open("model/movies.pkl", "rb") as file:
+with open(BASE_DIR / "model" / "movies.pkl", "rb") as file:
     movies = pickle.load(file)
 
-with open("model/vectors.pkl", "rb") as file:
+with open(BASE_DIR / "model" / "vectors.pkl", "rb") as file:
     vectors = pickle.load(file)
 
 
@@ -941,4 +949,8 @@ def recommend():
 
 if __name__ == "__main__":
 
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=os.environ.get("FLASK_DEBUG", "0") == "1"
+    )
